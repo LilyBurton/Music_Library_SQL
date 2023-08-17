@@ -3,27 +3,33 @@ from lib.artist_repository import ArtistRepository
 from lib.album_repository import AlbumRepository
 
 
-# Connect to the database
-connection = DatabaseConnection()
-connection.connect()
+class Application():
+    def __init__(self):
+        self._connection = DatabaseConnection()
+        self._connection.connect()
+        self._connection.seed("seeds/music_library.sql")
 
-# Seed with some seed data
-connection.seed("seeds/music_library.sql")
+    def run(self):
+    # "Runs" the terminal application.
+    # It might:
+    #   * Ask the user to enter some input
+    #   * Make some decisions based on that input
+    #   * Query the database
+    #   * Display some output
+    # We're going to print out the artists!
 
-# Retrieve all artists
-artist_repository = ArtistRepository(connection)
-artists = artist_repository.all()
+        artist_repository = ArtistRepository(self._connection)
+        artists = artist_repository.all()
 
-# List them out
-for artist in artists:
-    print(artist)
+        for artist in artists:
+            print(f"{artist.id}: {artist.name} ({artist.genre})")
+        
+        album_repository = AlbumRepository(self._connection)
+        albums = album_repository.all()
 
-# Retrieve all the albums
-album_repository = AlbumRepository(connection)
-albums = album_repository.all()
+        for album in albums:
+            print(f"{album.id}: {album.title} ({album.release_year} {album.artist_id})")
 
-# List albums out
-for album in albums:
-    print(album)
-
-print(album_repository.find(7))
+if __name__ == '__main__':
+    app = Application()
+    app.run()
